@@ -21,65 +21,6 @@ const init = function() {
         attachMousedownEvent(item)
     })
 
-    document.addEventListener("mousemove", function(e) {
-        e.preventDefault();
-        const rect = document.getElementById("rect")
-
-        if (currentState == State.DRAGGING_IMAGE) {
-            const currentMovingImage = document.getElementById("movingImg")
-            currentMovingImage.style.top = event.pageY - offsetInElement.y + "px"
-            currentMovingImage.style.left = event.pageX - offsetInElement.x + "px"
-
-            const dropBox = document.getElementsByClassName("dropBox")[0]
-            const dropBoxLeft = dropBox.offsetLeft
-            const dropBoxRight = dropBoxLeft + dropBox.offsetWidth
-            const dropBoxTop = dropBox.offsetTop
-            const dropBoxBottom = dropBoxTop + dropBox.offsetHeight
-
-            if (event.pageX > dropBoxLeft && event.pageX < dropBoxRight
-                && event.pageY > dropBoxTop && event.pageY < dropBoxBottom) {
-                if (dropBox.className.indexOf("selected") < 0) {
-                    dropBox.className += " selected"
-                }
-            } else {
-                dropBox.className = dropBox.className.replace("selected", "")
-            }
-        } else if (currentState == State.DRAGGING_RECT) {
-            const width = event.pageX - rectOrigin.x
-            const height = event.pageY - rectOrigin.y
-
-            if (width < 0) {
-                rect.style.left = e.pageX + "px"
-            }
-
-            if (height < 0) {
-                rect.style.top = e.pageY + "px"
-            }
-
-            rect.style.width = Math.abs(width) + "px";
-            rect.style.height = Math.abs(height) + "px";
-
-            // 当たり判定
-            dragCenterX = drag.offsetLeft + drag.offsetWidth / 2
-            dragCenterY = drag.offsetTop + drag.offsetHeight / 2
-
-            rectCenterX = rect.offsetLeft + rect.offsetWidth / 2
-            rectCenterY = rect.offsetTop + rect.offsetHeight / 2
-
-            if (Math.abs(dragCenterX - rectCenterX) <  (drag.offsetWidth + rect.offsetWidth) / 2 &&
-                    Math.abs(dragCenterY - rectCenterY) <  (drag.offsetHeight + rect.offsetHeight) / 2) {
-                // 当たってる
-                if (drag.className.indexOf("selected") < 0) {
-                    drag.className += " selected"
-                }
-            } else {
-                drag.className = drag.className.replace("selected", "")
-            }
-        }
-    })
-
-    // For drawing rect
-    // For dragging image
     document.addEventListener("mousedown", function(e) {
         currentState = State.DRAGGING_RECT
         const rect = document.getElementById("rect")
@@ -89,10 +30,14 @@ const init = function() {
         rectOrigin.y = e.pageY
         rect.style.left = rectOrigin.x + "px"
         rect.style.top = rectOrigin.y + "px"
+
+        document.addEventListener("mousemove", mouseMoveForDragRect)
     }, false)
 
     document.addEventListener("mouseup", function() {
         if (currentState == State.DRAGGING_IMAGE) {
+            document.removeEventListener("mousemove", mouseMoveForDragImg)
+
             const currentMovingImage = document.getElementById("movingImg")
             addClass(currentMovingImage, "invisible")
 
@@ -103,6 +48,8 @@ const init = function() {
                 dropBox.className = dropBox.className.replace("selected", "dropBoxPlaced")
             }
         } else {
+            document.removeEventListener("mousemove", mouseMoveForDragRect)
+
             const rect = document.getElementById("rect")
 
             rect.style.width = "0px"
@@ -128,8 +75,69 @@ const attachMousedownEvent = function(target) {
         currentMovingImage.style.left = this.offsetLeft + "px"
         currentMovingImage.style.top = (this.offsetTop - 10) + "px"
 
+        document.addEventListener("mousemove", mouseMoveForDragImg)
+
         e.stopPropagation()
     }, false)
+}
+
+const mouseMoveForDragImg = function(e) {
+    e.preventDefault();
+
+    const currentMovingImage = document.getElementById("movingImg")
+    currentMovingImage.style.top = event.pageY - offsetInElement.y + "px"
+    currentMovingImage.style.left = event.pageX - offsetInElement.x + "px"
+
+    const dropBox = document.getElementsByClassName("dropBox")[0]
+    const dropBoxLeft = dropBox.offsetLeft
+    const dropBoxRight = dropBoxLeft + dropBox.offsetWidth
+    const dropBoxTop = dropBox.offsetTop
+    const dropBoxBottom = dropBoxTop + dropBox.offsetHeight
+
+    if (event.pageX > dropBoxLeft && event.pageX < dropBoxRight
+        && event.pageY > dropBoxTop && event.pageY < dropBoxBottom) {
+        if (dropBox.className.indexOf("selected") < 0) {
+            dropBox.className += " selected"
+        }
+    } else {
+        dropBox.className = dropBox.className.replace("selected", "")
+    }
+}
+
+const mouseMoveForDragRect = function(e) {
+    e.preventDefault();
+    const rect = document.getElementById("rect")
+
+    const width = event.pageX - rectOrigin.x
+    const height = event.pageY - rectOrigin.y
+
+    if (width < 0) {
+        rect.style.left = e.pageX + "px"
+    }
+
+    if (height < 0) {
+        rect.style.top = e.pageY + "px"
+    }
+
+    rect.style.width = Math.abs(width) + "px";
+    rect.style.height = Math.abs(height) + "px";
+
+    // 当たり判定
+    dragCenterX = drag.offsetLeft + drag.offsetWidth / 2
+    dragCenterY = drag.offsetTop + drag.offsetHeight / 2
+
+    rectCenterX = rect.offsetLeft + rect.offsetWidth / 2
+    rectCenterY = rect.offsetTop + rect.offsetHeight / 2
+
+    if (Math.abs(dragCenterX - rectCenterX) <  (drag.offsetWidth + rect.offsetWidth) / 2 &&
+            Math.abs(dragCenterY - rectCenterY) <  (drag.offsetHeight + rect.offsetHeight) / 2) {
+        // 当たってる
+        if (drag.className.indexOf("selected") < 0) {
+            drag.className += " selected"
+        }
+    } else {
+        drag.className = drag.className.replace("selected", "")
+    }
 }
 
 const createPlacedImage = function(imageSrc) {
