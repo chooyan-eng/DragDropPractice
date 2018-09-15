@@ -17,10 +17,13 @@ let currentState = State.NONE
 const init = function() {
 
     const paletteItems = Array.from(document.getElementById("palette").children)
+
+    // mousedown for dragging images
     paletteItems.forEach(function(item) {
         attachMousedownEvent(item)
     })
 
+    // mousedown for rect
     document.addEventListener("mousedown", function(e) {
         currentState = State.DRAGGING_RECT
         const rect = document.getElementById("rect")
@@ -35,29 +38,29 @@ const init = function() {
     }, false)
 
     document.addEventListener("mouseup", function() {
-        if (currentState == State.DRAGGING_IMAGE) {
+        if (currentState == State.DRAGGING_IMAGE) { 
             document.removeEventListener("mousemove", mouseMoveForDragImg)
 
+            // hide dragging image
             const currentMovingImage = document.getElementById("movingImg")
             addClass(currentMovingImage, "invisible")
 
-            const dropBox = document.getElementsByClassName("dropBox")[0]
-            if (dropBox.className.indexOf("selected") > -1) {
-                dropBox.removeChild(dropBox.firstChild)
-                dropBox.appendChild(createPlacedImage(currentMovingImage.src))
-                dropBox.className = dropBox.className.replace("selected", "dropBoxPlaced")
-            }
-        } else {
+            const dropBoxes = Array.from(document.getElementsByClassName("dropBox"))
+            dropBoxes.forEach(function(dropBox) {
+                if (dropBox.className.indexOf("selected") > -1) {
+                    dropBox.removeChild(dropBox.firstChild)
+                    dropBox.appendChild(createPlacedImage(currentMovingImage.src))
+                    removeClass(dropBox, "selected")
+                    addClass(dropBox, "dropBoxPlaced")
+                }
+            })
+        } else if (currentState == State.DRAGGING_RECT) {
             document.removeEventListener("mousemove", mouseMoveForDragRect)
 
             const rect = document.getElementById("rect")
-
             rect.style.width = "0px"
             rect.style.height = "0px"
-            
-            if (rect.className.indexOf("invisible") < 0) {
-                rect.className += " invisible"
-            }
+            addClass(rect, "invisible")
         }
         currentState = State.NONE
     }, false)
@@ -96,11 +99,9 @@ const mouseMoveForDragImg = function(e) {
 
     if (event.pageX > dropBoxLeft && event.pageX < dropBoxRight
         && event.pageY > dropBoxTop && event.pageY < dropBoxBottom) {
-        if (dropBox.className.indexOf("selected") < 0) {
-            dropBox.className += " selected"
-        }
+        addClass(dropBox, "selected")
     } else {
-        dropBox.className = dropBox.className.replace("selected", "")
+        removeClass(dropBox, "selected")
     }
 }
 
@@ -132,11 +133,9 @@ const mouseMoveForDragRect = function(e) {
     if (Math.abs(dragCenterX - rectCenterX) <  (drag.offsetWidth + rect.offsetWidth) / 2 &&
             Math.abs(dragCenterY - rectCenterY) <  (drag.offsetHeight + rect.offsetHeight) / 2) {
         // 当たってる
-        if (drag.className.indexOf("selected") < 0) {
-            drag.className += " selected"
-        }
+        addClass(drag, "selected")
     } else {
-        drag.className = drag.className.replace("selected", "")
+        removeClass(drag, "selected")
     }
 }
 
