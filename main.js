@@ -117,16 +117,7 @@ const mouseMoveForDragRect = function(e) {
     rect.style.width = Math.abs(width) + "px";
     rect.style.height = Math.abs(height) + "px";
 
-    // 当たり判定
-    dragCenterX = drag.offsetLeft + drag.offsetWidth / 2
-    dragCenterY = drag.offsetTop + drag.offsetHeight / 2
-
-    rectCenterX = rect.offsetLeft + rect.offsetWidth / 2
-    rectCenterY = rect.offsetTop + rect.offsetHeight / 2
-
-    if (Math.abs(dragCenterX - rectCenterX) <  (drag.offsetWidth + rect.offsetWidth) / 2 &&
-            Math.abs(dragCenterY - rectCenterY) <  (drag.offsetHeight + rect.offsetHeight) / 2) {
-        // 当たってる
+    if (isCrossing(drag, rect)) {
         addClass(drag, "selected")
     } else {
         removeClass(drag, "selected")
@@ -156,4 +147,15 @@ const isInside = function(element, event) {
 
     return event.pageX > elementLeft && event.pageX < elementRight
             && event.pageY > delementTop && event.pageY < elementBottom
+}
+
+const isCrossing = function(element1, element2) {
+    const element1CenterX = element1.offsetLeft + element1.offsetWidth / 2
+    const element1CenterY = element1.offsetTop + element1.offsetHeight / 2
+
+    const element2CenterX = element2.offsetLeft + element2.offsetWidth / 2
+    const element2CenterY = element2.offsetTop + element2.offsetHeight / 2
+
+    return Math.abs(element1CenterX - element2CenterX) <  (element1.offsetWidth + element2.offsetWidth) / 2 &&
+            Math.abs(element1CenterY - element2CenterY) <  (element1.offsetHeight + element2.offsetHeight) / 2
 }
