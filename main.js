@@ -124,9 +124,12 @@ const mouseMoveForDragRect = function(e) {
     rect.style.width = Math.abs(width) + "px";
     rect.style.height = Math.abs(height) + "px";
 
-    if (isCrossing(drag, rect)) {
-        addClass(drag, "selected")
-    } else {
-        removeClass(drag, "selected")
-    }
+    const dropBoxes = Array.from(document.getElementsByClassName("dropBox"))
+    dropBoxes.forEach(function(dropBox) {
+        if (isCrossing(dropBox, rect) && dropBox.className.indexOf("dropBoxPlaced") > -1) {
+            addClass(dropBox, "selected")
+        } else {
+            removeClass(dropBox, "selected")
+        }
+    })
 }
