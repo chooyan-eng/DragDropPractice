@@ -48,7 +48,12 @@ const init = function() {
             const dropBoxes = Array.from(document.getElementsByClassName("dropBox"))
             dropBoxes.forEach(function(dropBox) {
                 if (dropBox.className.indexOf("selected") > -1) {
-                    dropBox.removeChild(dropBox.firstChild)
+                    if (dropBox.children.length > 0) {
+                        dropBox.removeChild(dropBox.firstChild)
+                    } else {
+                        const dropBoxWrapper = document.getElementById("dropBoxWrapper")
+                        dropBoxWrapper.appendChild(createDropBox())
+                    }
                     dropBox.appendChild(createPlacedImage(currentMovingImage.src))
                     removeClass(dropBox, "selected")
                     addClass(dropBox, "dropBoxPlaced")
@@ -91,12 +96,14 @@ const mouseMoveForDragImg = function(e) {
     currentMovingImage.style.top = event.pageY - offsetInElement.y + "px"
     currentMovingImage.style.left = event.pageX - offsetInElement.x + "px"
 
-    const dropBox = document.getElementsByClassName("dropBox")[0]
-    if (isInside(dropBox, e)) {
-        addClass(dropBox, "selected")
-    } else {
-        removeClass(dropBox, "selected")
-    }
+    const dropBoxes = Array.from(document.getElementsByClassName("dropBox"))
+    dropBoxes.forEach(function(dropBox) {
+        if (isInside(dropBox, e)) {
+            addClass(dropBox, "selected")
+        } else {
+            removeClass(dropBox, "selected")
+        }
+    })
 }
 
 const mouseMoveForDragRect = function(e) {

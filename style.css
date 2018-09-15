@@ -25,6 +25,7 @@
 
 .flexbox {
     display: flex;
+    flex-wrap: wrap;
 }
 
 .moving {
@@ -43,6 +44,8 @@
 .dropBox {
     width: 120px;
     height: 120px;
+    margin-left: 8px;
+    margin-bottom: 8px;
     border: 2px dashed #555;
     display: flex;
     justify-content: center;

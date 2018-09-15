@@ -5,6 +5,12 @@ const createPlacedImage = function(imageSrc) {
     return placedImg
 }
 
+const createDropBox = function() {
+    const dropBox = document.createElement("div")
+    dropBox.className = "dropBox"
+    return dropBox
+}
+
 const addClass = function(element, className) {
     element.className += (" " + className)
 }
