@@ -11,6 +11,8 @@ let y = 0
 let originalX = 0
 let originalY = 0
 
+let currentMovingImage = null
+
 const init = function() {
     const arrow = document.getElementById("arrow")
 
@@ -18,21 +20,25 @@ const init = function() {
     arrow.addEventListener("mousedown", function(e) {
         currentState = State.DRAGGING_IMAGE
         x = event.pageX - this.offsetLeft
-        y = event.pageY - this.offsetTop
-        if (this.className.indexOf("selected") < 0) {
-            this.className += " selected"
-        }
+        y = event.pageY - this.offsetTop + 10
+
+        currentMovingImage = document.createElement("img")
+        currentMovingImage.src = "./arrow.png"
+        currentMovingImage.className = "moving"
+        currentMovingImage.style.left = this.offsetLeft + "px"
+        currentMovingImage.style.top = (this.offsetTop - 10) + "px"
+        document.body.appendChild(currentMovingImage)
+
         e.stopPropagation()
     }, false)
 
     document.addEventListener("mousemove", function(e) {
         e.preventDefault();
-        const drag = document.getElementById("arrow")
         const rect = document.getElementById("rect")
 
         if (currentState == State.DRAGGING_IMAGE) {
-            drag.style.top = event.pageY - y + "px";
-            drag.style.left = event.pageX - x + "px";
+            currentMovingImage.style.top = event.pageY - y + "px";
+            currentMovingImage.style.left = event.pageX - x + "px";
         } else if (currentState == State.DRAGGING_WINDOW) {
             const width = event.pageX - originalX
             const height = event.pageY - originalY
@@ -87,15 +93,19 @@ const init = function() {
     }, false)
 
     document.addEventListener("mouseup", function() {
-        const rect = document.getElementById("rect")
+        if (currentState == State.DRAGGING_IMAGE) {
+            document.body.removeChild(currentMovingImage)
+        } else {
+            const rect = document.getElementById("rect")
 
-        rect.style.width = "0px"
-        rect.style.height = "0px"
-        
-        currentState = State.NONE
-        if (rect.className.indexOf("invisible") < 0) {
-            rect.className += " invisible"
+            rect.style.width = "0px"
+            rect.style.height = "0px"
+            
+            if (rect.className.indexOf("invisible") < 0) {
+                rect.className += " invisible"
+            }
         }
+        currentState = State.NONE
     }, false)
 
     

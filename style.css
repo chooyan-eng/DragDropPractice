@@ -1,12 +1,27 @@
+#palette {
+    width: 240px;
+}
+
+#workspace {
+    width: 720px;
+}
+
 #arrow {
-    position: absolute;
-    border: 1px solid #555;
-    padding: 16px;
+    margin: 16px;
 }
 
 #rect {
     position: absolute;
     border: 1px solid #d00;
+}
+
+.flexbox {
+    display: flex;
+}
+
+.moving {
+    position: absolute;
+    opacity: 0.5;
 }
 
 .selected {
