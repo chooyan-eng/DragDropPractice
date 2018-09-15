@@ -1,0 +1,18 @@
+#arrow {
+    position: absolute;
+    border: 1px solid #555;
+    padding: 16px;
+}
+
+#rect {
+    position: absolute;
+    border: 1px solid #d00;
+}
+
+.selected {
+    background-color: #faa;
+}
+
+.invisible {
+    display: none;
+}
