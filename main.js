@@ -8,12 +8,11 @@ const offsetInElement = {}
 offsetInElement["x"] = 0
 offsetInElement["y"] = 0
 
+const rectOrigin = {}
+rectOrigin["x"] = 0
+rectOrigin["y"] = 0
+
 let currentState = State.NONE
-
-let originalX = 0
-let originalY = 0
-
-let currentMovingImage = null
 
 const init = function() {
     const arrow = document.getElementById("arrow")
@@ -25,12 +24,11 @@ const init = function() {
         offsetInElement.x = event.pageX - this.offsetLeft
         offsetInElement.y = event.pageY - this.offsetTop + 10
 
-        currentMovingImage = document.createElement("img")
+        const currentMovingImage = document.getElementById("movingImg")
         currentMovingImage.src = this.src
-        currentMovingImage.className = "moving"
+        removeClass(currentMovingImage, "invisible")
         currentMovingImage.style.left = this.offsetLeft + "px"
         currentMovingImage.style.top = (this.offsetTop - 10) + "px"
-        document.body.appendChild(currentMovingImage)
 
         e.stopPropagation()
     }, false)
@@ -41,12 +39,11 @@ const init = function() {
         offsetInElement.x = event.pageX - this.offsetLeft
         offsetInElement.y = event.pageY - this.offsetTop + 10
 
-        currentMovingImage = document.createElement("img")
+        const currentMovingImage = document.getElementById("movingImg")
         currentMovingImage.src = this.src
-        currentMovingImage.className = "moving"
+        removeClass(currentMovingImage, "invisible")
         currentMovingImage.style.left = this.offsetLeft + "px"
         currentMovingImage.style.top = (this.offsetTop - 10) + "px"
-        document.body.appendChild(currentMovingImage)
 
         e.stopPropagation()
     }, false)
@@ -56,6 +53,7 @@ const init = function() {
         const rect = document.getElementById("rect")
 
         if (currentState == State.DRAGGING_IMAGE) {
+            const currentMovingImage = document.getElementById("movingImg")
             currentMovingImage.style.top = event.pageY - offsetInElement.y + "px"
             currentMovingImage.style.left = event.pageX - offsetInElement.x + "px"
 
@@ -74,8 +72,8 @@ const init = function() {
                 dropBox.className = dropBox.className.replace("selected", "")
             }
         } else if (currentState == State.DRAGGING_RECT) {
-            const width = event.pageX - originalX
-            const height = event.pageY - originalY
+            const width = event.pageX - rectOrigin.x
+            const height = event.pageY - rectOrigin.y
 
             if (width < 0) {
                 rect.style.left = e.pageX + "px"
@@ -114,15 +112,17 @@ const init = function() {
         const rect = document.getElementById("rect")
         rect.className = rect.className.replace("invisible", "")
 
-        originalX = e.pageX
-        originalY = e.pageY
-        rect.style.left = originalX + "px"
-        rect.style.top = originalY + "px"
+        rectOrigin.x = e.pageX
+        rectOrigin.y = e.pageY
+        rect.style.left = rectOrigin.x + "px"
+        rect.style.top = rectOrigin.y + "px"
     }, false)
 
     document.addEventListener("mouseup", function() {
         if (currentState == State.DRAGGING_IMAGE) {
-            document.body.removeChild(currentMovingImage)
+            const currentMovingImage = document.getElementById("movingImg")
+            addClass(currentMovingImage, "invisible")
+
             const dropBox = document.getElementsByClassName("dropBox")[0]
             if (dropBox.className.indexOf("selected") > -1) {
                 dropBox.removeChild(dropBox.firstChild)
@@ -147,5 +147,13 @@ const init = function() {
         placedImg.className = "placed"
         placedImg.src = imageSrc
         return placedImg
+    }
+
+    const addClass = function(element, className) {
+        element.className += (" " + className)
+    }
+
+    const removeClass = function(element, className) {
+        element.className = element.className.replace(new RegExp(className, 'g'), "")
     }
 }
