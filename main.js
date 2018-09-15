@@ -92,13 +92,7 @@ const mouseMoveForDragImg = function(e) {
     currentMovingImage.style.left = event.pageX - offsetInElement.x + "px"
 
     const dropBox = document.getElementsByClassName("dropBox")[0]
-    const dropBoxLeft = dropBox.offsetLeft
-    const dropBoxRight = dropBoxLeft + dropBox.offsetWidth
-    const dropBoxTop = dropBox.offsetTop
-    const dropBoxBottom = dropBoxTop + dropBox.offsetHeight
-
-    if (event.pageX > dropBoxLeft && event.pageX < dropBoxRight
-        && event.pageY > dropBoxTop && event.pageY < dropBoxBottom) {
+    if (isInside(dropBox, e)) {
         addClass(dropBox, "selected")
     } else {
         removeClass(dropBox, "selected")
@@ -152,4 +146,14 @@ const addClass = function(element, className) {
 
 const removeClass = function(element, className) {
     element.className = element.className.replace(new RegExp(className, 'g'), "")
+}
+
+const isInside = function(element, event) {
+    const elementLeft = element.offsetLeft
+    const elementRight = elementLeft + element.offsetWidth
+    const delementTop = element.offsetTop
+    const elementBottom = delementTop + element.offsetHeight
+
+    return event.pageX > elementLeft && event.pageX < elementRight
+            && event.pageY > delementTop && event.pageY < elementBottom
 }
