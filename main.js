@@ -37,8 +37,24 @@ const init = function() {
         const rect = document.getElementById("rect")
 
         if (currentState == State.DRAGGING_IMAGE) {
-            currentMovingImage.style.top = event.pageY - y + "px";
-            currentMovingImage.style.left = event.pageX - x + "px";
+            currentMovingImage.style.top = event.pageY - y + "px"
+            currentMovingImage.style.left = event.pageX - x + "px"
+
+            const dropBox = document.getElementsByClassName("dropBox")[0]
+            const dropBoxLeft = dropBox.offsetLeft
+            const dropBoxRight = dropBoxLeft + dropBox.offsetWidth
+            const dropBoxTop = dropBox.offsetTop
+            const dropBoxBottom = dropBoxTop + dropBox.offsetHeight
+
+            if (event.pageX > dropBoxLeft && event.pageX < dropBoxRight
+                && event.pageY > dropBoxTop && event.pageY < dropBoxBottom) {
+                    console.log("aaaaaaaa")
+                if (dropBox.className.indexOf("selected") < 0) {
+                    dropBox.className += " selected"
+                }
+            } else {
+                dropBox.className = dropBox.className.replace("selected", "")
+            }
         } else if (currentState == State.DRAGGING_WINDOW) {
             const width = event.pageX - originalX
             const height = event.pageY - originalY
@@ -107,7 +123,4 @@ const init = function() {
         }
         currentState = State.NONE
     }, false)
-
-    
-
 }

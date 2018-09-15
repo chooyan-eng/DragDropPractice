@@ -15,6 +15,10 @@
     border: 1px solid #d00;
 }
 
+#dropBoxWrapper {
+    margin: 16px;
+}
+
 .flexbox {
     display: flex;
 }
@@ -30,4 +34,10 @@
 
 .invisible {
     display: none;
+}
+
+.dropBox {
+    width: 120px;
+    height: 120px;
+    border: 2px dashed #555;
 }
