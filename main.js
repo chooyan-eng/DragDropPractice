@@ -1,12 +1,14 @@
 const State = {
     NONE: 1,
     DRAGGING_IMAGE: 2,
-    DRAGGING_WINDOW: 3,
+    DRAGGING_RECT: 3,
 }
 
+const offsetInElement = {}
+offsetInElement["x"] = 0
+offsetInElement["y"] = 0
+
 let currentState = State.NONE
-let x = 0
-let y = 0
 
 let originalX = 0
 let originalY = 0
@@ -20,8 +22,8 @@ const init = function() {
     // For dragging image
     arrow.addEventListener("mousedown", function(e) {
         currentState = State.DRAGGING_IMAGE
-        x = event.pageX - this.offsetLeft
-        y = event.pageY - this.offsetTop + 10
+        offsetInElement.x = event.pageX - this.offsetLeft
+        offsetInElement.y = event.pageY - this.offsetTop + 10
 
         currentMovingImage = document.createElement("img")
         currentMovingImage.src = this.src
@@ -36,8 +38,8 @@ const init = function() {
     // For dragging image
     arrow2.addEventListener("mousedown", function(e) {
         currentState = State.DRAGGING_IMAGE
-        x = event.pageX - this.offsetLeft
-        y = event.pageY - this.offsetTop + 10
+        offsetInElement.x = event.pageX - this.offsetLeft
+        offsetInElement.y = event.pageY - this.offsetTop + 10
 
         currentMovingImage = document.createElement("img")
         currentMovingImage.src = this.src
@@ -54,8 +56,8 @@ const init = function() {
         const rect = document.getElementById("rect")
 
         if (currentState == State.DRAGGING_IMAGE) {
-            currentMovingImage.style.top = event.pageY - y + "px"
-            currentMovingImage.style.left = event.pageX - x + "px"
+            currentMovingImage.style.top = event.pageY - offsetInElement.y + "px"
+            currentMovingImage.style.left = event.pageX - offsetInElement.x + "px"
 
             const dropBox = document.getElementsByClassName("dropBox")[0]
             const dropBoxLeft = dropBox.offsetLeft
@@ -71,7 +73,7 @@ const init = function() {
             } else {
                 dropBox.className = dropBox.className.replace("selected", "")
             }
-        } else if (currentState == State.DRAGGING_WINDOW) {
+        } else if (currentState == State.DRAGGING_RECT) {
             const width = event.pageX - originalX
             const height = event.pageY - originalY
 
@@ -108,7 +110,7 @@ const init = function() {
     // For drawing rect
     // For dragging image
     document.addEventListener("mousedown", function(e) {
-        currentState = State.DRAGGING_WINDOW
+        currentState = State.DRAGGING_RECT
         const rect = document.getElementById("rect")
         rect.className = rect.className.replace("invisible", "")
 
