@@ -15,38 +15,11 @@ rectOrigin["y"] = 0
 let currentState = State.NONE
 
 const init = function() {
-    const arrow = document.getElementById("arrow")
-    const arrow2 = document.getElementById("arrow2")
 
-    // For dragging image
-    arrow.addEventListener("mousedown", function(e) {
-        currentState = State.DRAGGING_IMAGE
-        offsetInElement.x = event.pageX - this.offsetLeft
-        offsetInElement.y = event.pageY - this.offsetTop + 10
-
-        const currentMovingImage = document.getElementById("movingImg")
-        currentMovingImage.src = this.src
-        removeClass(currentMovingImage, "invisible")
-        currentMovingImage.style.left = this.offsetLeft + "px"
-        currentMovingImage.style.top = (this.offsetTop - 10) + "px"
-
-        e.stopPropagation()
-    }, false)
-
-    // For dragging image
-    arrow2.addEventListener("mousedown", function(e) {
-        currentState = State.DRAGGING_IMAGE
-        offsetInElement.x = event.pageX - this.offsetLeft
-        offsetInElement.y = event.pageY - this.offsetTop + 10
-
-        const currentMovingImage = document.getElementById("movingImg")
-        currentMovingImage.src = this.src
-        removeClass(currentMovingImage, "invisible")
-        currentMovingImage.style.left = this.offsetLeft + "px"
-        currentMovingImage.style.top = (this.offsetTop - 10) + "px"
-
-        e.stopPropagation()
-    }, false)
+    const paletteItems = Array.from(document.getElementById("palette").children)
+    paletteItems.forEach(function(item) {
+        attachMousedownEvent(item)
+    })
 
     document.addEventListener("mousemove", function(e) {
         e.preventDefault();
@@ -141,19 +114,35 @@ const init = function() {
         }
         currentState = State.NONE
     }, false)
+}
 
-    const createPlacedImage = function(imageSrc) {
-        const placedImg = document.createElement("img")
-        placedImg.className = "placed"
-        placedImg.src = imageSrc
-        return placedImg
-    }
+const attachMousedownEvent = function(target) {
+    target.addEventListener("mousedown", function(e) {
+        currentState = State.DRAGGING_IMAGE
+        offsetInElement.x = event.pageX - this.offsetLeft
+        offsetInElement.y = event.pageY - this.offsetTop + 10
 
-    const addClass = function(element, className) {
-        element.className += (" " + className)
-    }
+        const currentMovingImage = document.getElementById("movingImg")
+        currentMovingImage.src = this.src
+        removeClass(currentMovingImage, "invisible")
+        currentMovingImage.style.left = this.offsetLeft + "px"
+        currentMovingImage.style.top = (this.offsetTop - 10) + "px"
 
-    const removeClass = function(element, className) {
-        element.className = element.className.replace(new RegExp(className, 'g'), "")
-    }
+        e.stopPropagation()
+    }, false)
+}
+
+const createPlacedImage = function(imageSrc) {
+    const placedImg = document.createElement("img")
+    placedImg.className = "placed"
+    placedImg.src = imageSrc
+    return placedImg
+}
+
+const addClass = function(element, className) {
+    element.className += (" " + className)
+}
+
+const removeClass = function(element, className) {
+    element.className = element.className.replace(new RegExp(className, 'g'), "")
 }
