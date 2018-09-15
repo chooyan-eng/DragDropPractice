@@ -15,6 +15,7 @@ let currentMovingImage = null
 
 const init = function() {
     const arrow = document.getElementById("arrow")
+    const arrow2 = document.getElementById("arrow2")
 
     // For dragging image
     arrow.addEventListener("mousedown", function(e) {
@@ -23,7 +24,23 @@ const init = function() {
         y = event.pageY - this.offsetTop + 10
 
         currentMovingImage = document.createElement("img")
-        currentMovingImage.src = "./arrow.png"
+        currentMovingImage.src = this.src
+        currentMovingImage.className = "moving"
+        currentMovingImage.style.left = this.offsetLeft + "px"
+        currentMovingImage.style.top = (this.offsetTop - 10) + "px"
+        document.body.appendChild(currentMovingImage)
+
+        e.stopPropagation()
+    }, false)
+
+    // For dragging image
+    arrow2.addEventListener("mousedown", function(e) {
+        currentState = State.DRAGGING_IMAGE
+        x = event.pageX - this.offsetLeft
+        y = event.pageY - this.offsetTop + 10
+
+        currentMovingImage = document.createElement("img")
+        currentMovingImage.src = this.src
         currentMovingImage.className = "moving"
         currentMovingImage.style.left = this.offsetLeft + "px"
         currentMovingImage.style.top = (this.offsetTop - 10) + "px"
@@ -48,7 +65,6 @@ const init = function() {
 
             if (event.pageX > dropBoxLeft && event.pageX < dropBoxRight
                 && event.pageY > dropBoxTop && event.pageY < dropBoxBottom) {
-                    console.log("aaaaaaaa")
                 if (dropBox.className.indexOf("selected") < 0) {
                     dropBox.className += " selected"
                 }
@@ -89,12 +105,6 @@ const init = function() {
         }
     })
 
-    arrow.addEventListener("mouseup", function(e) {
-        currentState = State.NONE
-        this.className = this.className.replace("selected", "")
-        e.stopPropagation()
-    }, false)
-
     // For drawing rect
     // For dragging image
     document.addEventListener("mousedown", function(e) {
@@ -111,6 +121,12 @@ const init = function() {
     document.addEventListener("mouseup", function() {
         if (currentState == State.DRAGGING_IMAGE) {
             document.body.removeChild(currentMovingImage)
+            const dropBox = document.getElementsByClassName("dropBox")[0]
+            if (dropBox.className.indexOf("selected") > -1) {
+                dropBox.removeChild(dropBox.firstChild)
+                dropBox.appendChild(createPlacedImage(currentMovingImage.src))
+                dropBox.className = dropBox.className.replace("selected", "dropBoxPlaced")
+            }
         } else {
             const rect = document.getElementById("rect")
 
@@ -123,4 +139,11 @@ const init = function() {
         }
         currentState = State.NONE
     }, false)
+
+    const createPlacedImage = function(imageSrc) {
+        const placedImg = document.createElement("img")
+        placedImg.className = "placed"
+        placedImg.src = imageSrc
+        return placedImg
+    }
 }
