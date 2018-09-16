@@ -25,9 +25,11 @@ const init = function() {
     })
     // mousedown for rect
     document.addEventListener("mousedown", mouseDownForRect, false)
+    document.addEventListener("touchstart", mouseDownForRect, false)
 
     // mouseup for all
     document.addEventListener("mouseup", mouseUpHandler, false)
+    document.addEventListener("touchend", mouseUpHandler, false)
 }
 
 const mouseDownForImg = function(e) {
