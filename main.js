@@ -24,8 +24,9 @@ const init = function() {
         item.addEventListener("touchstart", mouseDownForImg, false)
     })
     // mousedown for rect
-    document.addEventListener("mousedown", mouseDownForRect, false)
-    document.addEventListener("touchstart", mouseDownForRect, false)
+    const workspace = document.getElementById("workspace")
+    workspace.addEventListener("mousedown", mouseDownForRect, false)
+    workspace.addEventListener("touchstart", mouseDownForRect, false)
 
     // mouseup for all
     document.addEventListener("mouseup", mouseUpHandler, false)

@@ -4,6 +4,7 @@
 
 #workspace {
     width: 720px;
+    min-height: 640px;
 }
 
 #arrow {
