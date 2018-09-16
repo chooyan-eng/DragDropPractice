@@ -20,77 +20,51 @@ const init = function() {
 
     // mousedown for dragging images
     paletteItems.forEach(function(item) {
-        attachMousedownEvent(item)
+        item.addEventListener("mousedown", mouseDownForImg, false)
+        item.addEventListener("touchstart", mouseDownForImg, false)
     })
-
     // mousedown for rect
-    document.addEventListener("mousedown", function(e) {
-        currentState = State.DRAGGING_RECT
-        const rect = document.getElementById("rect")
-        rect.className = rect.className.replace("invisible", "")
+    document.addEventListener("mousedown", mouseDownForRect, false)
 
-        rectOrigin.x = e.pageX
-        rectOrigin.y = e.pageY
-        rect.style.left = rectOrigin.x + "px"
-        rect.style.top = rectOrigin.y + "px"
-
-        document.addEventListener("mousemove", mouseMoveForDragRect)
-    }, false)
-
-    document.addEventListener("mouseup", function() {
-        if (currentState == State.DRAGGING_IMAGE) { 
-            document.removeEventListener("mousemove", mouseMoveForDragImg)
-
-            // hide dragging image
-            const currentMovingImage = document.getElementById("movingImg")
-            addClass(currentMovingImage, "invisible")
-
-            const dropBoxes = Array.from(document.getElementsByClassName("dropBox"))
-            dropBoxes.forEach(function(dropBox) {
-                if (dropBox.className.indexOf("selected") > -1) {
-                    if (dropBox.children.length > 0) {
-                        dropBox.removeChild(dropBox.firstChild)
-                    } else {
-                        const dropBoxWrapper = document.getElementById("dropBoxWrapper")
-                        dropBoxWrapper.appendChild(createDropBox())
-                    }
-                    dropBox.appendChild(createPlacedImage(currentMovingImage.src))
-                    removeClass(dropBox, "selected")
-                    addClass(dropBox, "dropBoxPlaced")
-                }
-            })
-        } else if (currentState == State.DRAGGING_RECT) {
-            document.removeEventListener("mousemove", mouseMoveForDragRect)
-
-            const rect = document.getElementById("rect")
-            rect.style.width = "0px"
-            rect.style.height = "0px"
-            addClass(rect, "invisible")
-        }
-        currentState = State.NONE
-    }, false)
+    // mouseup for all
+    document.addEventListener("mouseup", mouseUpHandler, false)
 }
 
-const attachMousedownEvent = function(target) {
-    target.addEventListener("mousedown", function(e) {
-        currentState = State.DRAGGING_IMAGE
-        offsetInElement.x = event.pageX - this.offsetLeft
-        offsetInElement.y = event.pageY - this.offsetTop + 10
+const mouseDownForImg = function(e) {
+    e.preventDefault();
 
-        const currentMovingImage = document.getElementById("movingImg")
-        currentMovingImage.src = this.src
-        removeClass(currentMovingImage, "invisible")
-        currentMovingImage.style.left = this.offsetLeft + "px"
-        currentMovingImage.style.top = (this.offsetTop - 10) + "px"
+    //タッチデイベントとマウスのイベントの差異を吸収
+    if(e.type === "mousedown") {
+        var event = e;
+    } else {
+        var event = e.changedTouches[0];
+    }
 
-        document.addEventListener("mousemove", mouseMoveForDragImg)
+    currentState = State.DRAGGING_IMAGE
+    offsetInElement.x = event.pageX - this.offsetLeft
+    offsetInElement.y = event.pageY - this.offsetTop + 10
 
-        e.stopPropagation()
-    }, false)
+    const currentMovingImage = document.getElementById("movingImg")
+    currentMovingImage.src = this.src
+    removeClass(currentMovingImage, "invisible")
+    currentMovingImage.style.left = this.offsetLeft + "px"
+    currentMovingImage.style.top = (this.offsetTop - 10) + "px"
+
+    document.addEventListener("mousemove", mouseMoveForDragImg)
+    document.addEventListener("touchmove", mouseMoveForDragImg)
+
+    e.stopPropagation()
 }
 
 const mouseMoveForDragImg = function(e) {
     e.preventDefault();
+
+    //タッチデイベントとマウスのイベントの差異を吸収
+    if(e.type === "mousemove") {
+        var event = e;
+    } else {
+        var event = e.changedTouches[0];
+    }
 
     const currentMovingImage = document.getElementById("movingImg")
     currentMovingImage.style.top = event.pageY - offsetInElement.y + "px"
@@ -106,19 +80,85 @@ const mouseMoveForDragImg = function(e) {
     })
 }
 
+const mouseDownForRect = function(e) {
+    e.preventDefault();
+
+    //タッチデイベントとマウスのイベントの差異を吸収
+    if(e.type === "mousedown") {
+        var event = e;
+    } else {
+        var event = e.changedTouches[0];
+    }
+
+    currentState = State.DRAGGING_RECT
+    const rect = document.getElementById("rect")
+    rect.className = rect.className.replace("invisible", "")
+
+    rectOrigin.x = event.pageX
+    rectOrigin.y = event.pageY
+    rect.style.left = rectOrigin.x + "px"
+    rect.style.top = rectOrigin.y + "px"
+
+    document.addEventListener("mousemove", mouseMoveForDragRect)
+    document.addEventListener("touchmove", mouseMoveForDragRect)
+}
+
+const mouseUpHandler = function() {
+    if (currentState == State.DRAGGING_IMAGE) { 
+        document.removeEventListener("mousemove", mouseMoveForDragImg)
+        document.removeEventListener("touchmove", mouseMoveForDragImg)
+
+        // hide dragging image
+        const currentMovingImage = document.getElementById("movingImg")
+        addClass(currentMovingImage, "invisible")
+
+        const dropBoxes = Array.from(document.getElementsByClassName("dropBox"))
+        dropBoxes.forEach(function(dropBox) {
+            if (dropBox.className.indexOf("selected") > -1) {
+                if (dropBox.children.length > 0) {
+                    dropBox.removeChild(dropBox.firstChild)
+                } else {
+                    const dropBoxWrapper = document.getElementById("dropBoxWrapper")
+                    dropBoxWrapper.appendChild(createDropBox())
+                }
+                dropBox.appendChild(createPlacedImage(currentMovingImage.src))
+                removeClass(dropBox, "selected")
+                addClass(dropBox, "dropBoxPlaced")
+            }
+        })
+    } else if (currentState == State.DRAGGING_RECT) {
+        document.removeEventListener("mousemove", mouseMoveForDragRect)
+        document.removeEventListener("touchmove", mouseMoveForDragRect)
+
+        const rect = document.getElementById("rect")
+        rect.style.width = "0px"
+        rect.style.height = "0px"
+        addClass(rect, "invisible")
+    }
+    currentState = State.NONE
+}
+
 const mouseMoveForDragRect = function(e) {
     e.preventDefault();
+
+    //タッチデイベントとマウスのイベントの差異を吸収
+    if(e.type === "mousemove") {
+        var event = e;
+    } else {
+        var event = e.changedTouches[0];
+    }
+
     const rect = document.getElementById("rect")
 
     const width = event.pageX - rectOrigin.x
     const height = event.pageY - rectOrigin.y
 
     if (width < 0) {
-        rect.style.left = e.pageX + "px"
+        rect.style.left = event.pageX + "px"
     }
 
     if (height < 0) {
-        rect.style.top = e.pageY + "px"
+        rect.style.top = event.pageY + "px"
     }
 
     rect.style.width = Math.abs(width) + "px";
