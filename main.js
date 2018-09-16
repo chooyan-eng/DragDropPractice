@@ -112,8 +112,8 @@ const mouseDownForRect = function(e) {
     removeClass(from, "invisible")
     removeClass(to, "invisible")
 
-    const left = event.x - (from.offsetWidth / 2)
-    const top = event.y - (from.offsetHeight / 2)
+    const left = event.pageX - (from.offsetWidth / 2)
+    const top = event.pageY - (from.offsetHeight / 2)
 
     from.style.left = left + "px"
     from.style.top = top + "px"
@@ -173,8 +173,8 @@ const mouseMoveForDragRect = function(e) {
 
     const to = document.getElementById("to")
 
-    const left = event.x - (from.offsetWidth / 2)
-    const top = event.y - (from.offsetHeight / 2)
+    const left = event.pageX - (from.offsetWidth / 2)
+    const top = event.pageY - (from.offsetHeight / 2)
 
     to.style.left = left + "px"
     to.style.top = top + "px"
