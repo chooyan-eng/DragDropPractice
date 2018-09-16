@@ -51,7 +51,7 @@ const mouseDownForImg = function(e) {
     currentMovingImage.src = this.src
     removeClass(currentMovingImage, "invisible")
     currentMovingImage.style.left = this.offsetLeft + "px"
-    currentMovingImage.style.top = (this.offsetTop - 10) + "px"
+    currentMovingImage.style.top = (this.offsetTop - 10 + window.scrollY) + "px"
 
     document.addEventListener("mousemove", mouseMoveForDragImg)
     document.addEventListener("touchmove", mouseMoveForDragImg)
@@ -70,7 +70,7 @@ const mouseMoveForDragImg = function(e) {
     }
 
     const currentMovingImage = document.getElementById("movingImg")
-    currentMovingImage.style.top = event.pageY - offsetInElement.y + "px"
+    currentMovingImage.style.top = event.pageY - offsetInElement.y + window.scrollY + "px"
     currentMovingImage.style.left = event.pageX - offsetInElement.x + "px"
 
     const dropBoxes = Array.from(document.getElementsByClassName("dropBox"))
