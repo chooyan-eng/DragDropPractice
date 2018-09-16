@@ -93,21 +93,40 @@ const mouseDownForRect = function(e) {
         var event = e.changedTouches[0];
     }
 
-    currentState = State.DRAGGING_RECT
-    const rect = document.getElementById("rect")
-    rect.className = rect.className.replace("invisible", "")
+    const dropBoxes = Array.from(document.getElementsByClassName("dropBox"))
+    var isOnDropBox = false
+    dropBoxes.forEach(function(dropBox) {
+        if (isInside(dropBox, event) && dropBox.className.indexOf("dropBoxPlaced") > -1) {
+            isOnDropBox = true
+        }
+    })
+    if (!isOnDropBox) {
+        return
+    }
 
-    rectOrigin.x = event.pageX
-    rectOrigin.y = event.pageY
-    rect.style.left = rectOrigin.x + "px"
-    rect.style.top = rectOrigin.y + "px"
+    currentState = State.DRAGGING_RECT
+
+    const from = document.getElementById("from")
+    const to = document.getElementById("to")
+
+    removeClass(from, "invisible")
+    removeClass(to, "invisible")
+
+    const left = event.x - (from.offsetWidth / 2)
+    const top = event.y - (from.offsetHeight / 2)
+
+    from.style.left = left + "px"
+    from.style.top = top + "px"
+
+    to.style.left = left + "px"
+    to.style.top = top + "px"
 
     document.addEventListener("mousemove", mouseMoveForDragRect)
     document.addEventListener("touchmove", mouseMoveForDragRect)
 }
 
 const mouseUpHandler = function() {
-    if (currentState == State.DRAGGING_IMAGE) { 
+    if (currentState === State.DRAGGING_IMAGE) { 
         document.removeEventListener("mousemove", mouseMoveForDragImg)
         document.removeEventListener("touchmove", mouseMoveForDragImg)
 
@@ -129,14 +148,15 @@ const mouseUpHandler = function() {
                 addClass(dropBox, "dropBoxPlaced")
             }
         })
-    } else if (currentState == State.DRAGGING_RECT) {
+    } else if (currentState === State.DRAGGING_RECT) {
         document.removeEventListener("mousemove", mouseMoveForDragRect)
         document.removeEventListener("touchmove", mouseMoveForDragRect)
 
-        const rect = document.getElementById("rect")
-        rect.style.width = "0px"
-        rect.style.height = "0px"
-        addClass(rect, "invisible")
+        const from = document.getElementById("from")
+        addClass(from, "invisible")
+
+        const to = document.getElementById("to")
+        addClass(to, "invisible")
     }
     currentState = State.NONE
 }
@@ -151,25 +171,31 @@ const mouseMoveForDragRect = function(e) {
         var event = e.changedTouches[0];
     }
 
-    const rect = document.getElementById("rect")
+    const to = document.getElementById("to")
 
-    const width = event.pageX - rectOrigin.x
-    const height = event.pageY - rectOrigin.y
+    const left = event.x - (from.offsetWidth / 2)
+    const top = event.y - (from.offsetHeight / 2)
 
-    if (width < 0) {
-        rect.style.left = event.pageX + "px"
+    to.style.left = left + "px"
+    to.style.top = top + "px"
+
+    var fromDropBoxIndex = findFromDropBoxIndex()
+    var toDropBoxIndex = findToDropBoxIndex()
+
+    const fromIndex = Math.min(fromDropBoxIndex, toDropBoxIndex)
+    const toIndex = Math.max(fromDropBoxIndex, toDropBoxIndex)
+
+    if (fromIndex === -1 || toIndex === -1) {
+        return
     }
-
-    if (height < 0) {
-        rect.style.top = event.pageY + "px"
-    }
-
-    rect.style.width = Math.abs(width) + "px";
-    rect.style.height = Math.abs(height) + "px";
 
     const dropBoxes = Array.from(document.getElementsByClassName("dropBox"))
-    dropBoxes.forEach(function(dropBox) {
-        if (isCrossing(dropBox, rect) && dropBox.className.indexOf("dropBoxPlaced") > -1) {
+
+    dropBoxes.forEach(function(dropBox, index) {
+
+        if (index < fromIndex) {
+            removeClass(dropBox, "selected")
+        } else if (index >= fromIndex && index <= toIndex){
             addClass(dropBox, "selected")
         } else {
             removeClass(dropBox, "selected")

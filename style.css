@@ -62,3 +62,12 @@
 .placed {
     width: 96px;
 }
+
+.circle {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background-color: #0a0;
+    opacity: 0.5;
+}
